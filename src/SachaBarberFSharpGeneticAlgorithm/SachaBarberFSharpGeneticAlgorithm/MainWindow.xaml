@@ -1,0 +1,20 @@
+﻿<Window
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:viewModels="clr-namespace:ViewModelTypes;assembly=SachaBarberFSharpGeneticAlgorithm"
+    xmlns:fsxaml="http://github.com/fsprojects/FsXaml"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    Title="MVVM and XAML Type provider" Height="200" Width="400"
+    viewModels:AttachedProps.ViewModelType="{x:Type viewModels:MainWindowViewModel}">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding WindowClosingCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <StackPanel Orientation="Vertical">
+        <Label Content="{Binding Message}"/>
+        <Button Command="{Binding OkCommand}" Content="CLick me"/>
+    </StackPanel>
+</Window>
