@@ -1,0 +1,5 @@
+﻿1. Throw exception if CSV file doesnt contain exactly 9 rows
+2. CHart of current population fitness
+3. Make video
+4. Do write up
+
