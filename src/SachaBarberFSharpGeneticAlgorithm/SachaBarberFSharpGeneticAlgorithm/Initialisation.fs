@@ -8,10 +8,16 @@ module Initialisation =
 
     type initialPopulationDataFromCsv = CsvProvider<"InitialPopulation.csv">
 
+
     let createInitialPopulationFromCsvUsingCsvProvider() = 
         let exePath = System.Reflection.Assembly.GetEntryAssembly().Location
         let path = exePath.Substring(0,exePath.LastIndexOf(@"\") + 1) + "InitialPopulation.csv"
         let populationFromCsv = initialPopulationDataFromCsv.Load(path)
+
+        if( populationFromCsv.Rows |> Seq.length <> 9) then
+            failwith  "Incorrect number of rows found in CSV file, expected 9 to work correctly" 
+
+
         populationFromCsv.Rows 
             |> Seq.map (fun row -> 
                 { 
@@ -30,6 +36,11 @@ module Initialisation =
         let exePath = System.Reflection.Assembly.GetEntryAssembly().Location
         let path = exePath.Substring(0,exePath.LastIndexOf(@"\") + 1) + "InitialPopulation.csv"
         let testCsv = Frame.ReadCsv(path)
+
+        if( testCsv.RowCount <> 9) then
+            failwith  "Incorrect number of rows found in CSV file, expected 9 to work correctly" 
+
+
         let loadedPopulation  = 
             testCsv 
             |> Frame.mapRowValues (fun row -> 
@@ -48,8 +59,13 @@ module Initialisation =
 
 
     let GetUsageMessage() =
-        "SachaBarberFSharpFinalProject must run with either 'Deedle' 
-                    or 'CSVProvider'\r\nfor the InitialPopulationLoadingStrategy App.Config setting"
+        let sb = new System.Text.StringBuilder()
+        sb.AppendLine("SachaBarberFSharpFinalProject must run with either 'Deedle'") |> ignore
+        sb.AppendLine("or 'CSVProvider', for the InitialPopulationLoadingStrategy") |> ignore
+        sb.AppendLine("App.Config setting value, AND the input CSV file MUST") |> ignore
+        sb.AppendLine("contain exactly 9 rows of gene values") |> ignore
+        sb.ToString()
+
 
     let DoInitialPopulationLoadingStrategy() =
         let initialPopulationProviderType = 

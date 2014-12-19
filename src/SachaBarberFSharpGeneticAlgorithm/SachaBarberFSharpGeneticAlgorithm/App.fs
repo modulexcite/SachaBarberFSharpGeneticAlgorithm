@@ -28,7 +28,7 @@ let main argv =
     with
         | Failure(msg) -> 
             log.Error("Error starting up, this could be caused by by AppSettings value for 'InitialPopulationLoadingStrategy'")
-            MessageBox.Show("Error", GetUsageMessage(),MessageBoxButton.OK) |> ignore
+            MessageBox.Show(GetUsageMessage(),"Error",MessageBoxButton.OK) |> ignore
             -1
 
 
