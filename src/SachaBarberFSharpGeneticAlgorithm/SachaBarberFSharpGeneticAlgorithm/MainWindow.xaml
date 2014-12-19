@@ -4,7 +4,10 @@
     xmlns:viewModels="clr-namespace:ViewModelTypes;assembly=SachaBarberFSharpGeneticAlgorithm"
     xmlns:fsxaml="http://github.com/fsprojects/FsXaml"
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-    Title="MVVM and XAML Type provider" Height="200" Width="400"
+    xmlns:bioMorphs="clr-namespace:BioCSharp.Controls;assembly=BioCSharp"
+    Title="F#/C# Biomorphs" 
+    SizeToContent="WidthAndHeight"
+    ResizeMode="NoResize"
     viewModels:AttachedProps.ViewModelType="{x:Type viewModels:MainWindowViewModel}">
 
     <i:Interaction.Triggers>
@@ -13,8 +16,45 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <StackPanel Orientation="Vertical">
-        <Label Content="{Binding Message}"/>
-        <Button Command="{Binding OkCommand}" Content="CLick me"/>
-    </StackPanel>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="450"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <bioMorphs:BiomorphItemsControl ItemsSource="{Binding Population}" Width="450" Height="450">
+            <bioMorphs:BiomorphItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border x:Name="bord" Width="150" Height="150"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                        BorderBrush="Transparent" BorderThickness="2">
+                        <TextBlock Text="{Binding Fitness}" HorizontalAlignment="Right"
+                                   VerticalAlignment="Bottom" FontWeight="Bold" Foreground="Black"
+                                   FontSize="12"/>
+                    </Border>
+
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                            <Setter TargetName="bord" Property="BorderBrush" Value="OrangeRed"></Setter>
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </bioMorphs:BiomorphItemsControl.ItemTemplate>
+            <bioMorphs:BiomorphItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="3" Rows="3"/>
+                </ItemsPanelTemplate>
+            </bioMorphs:BiomorphItemsControl.ItemsPanel>
+
+        </bioMorphs:BiomorphItemsControl>
+
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <Button Command="{Binding OkCommand}" Content="Click me"/>
+        </StackPanel>
+
+    </Grid>
+    
+  
 </Window>

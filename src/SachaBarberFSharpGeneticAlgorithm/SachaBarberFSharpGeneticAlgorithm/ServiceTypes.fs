@@ -3,19 +3,20 @@
 open System
 open System.Reactive.Subjects
 open System.Reactive.Linq
+open FsIOCWindow.ModelTypes
 
 
 [<AutoOpen>]
 module ServiceTypes = 
 
     type IPopulationInitialiser =
-        abstract member InitialPopulationStream : IObservable<string>
-        abstract member PublishPopulation : string -> unit
+        abstract member InitialPopulationStream : IObservable<seq<FsIOCWindow.ModelTypes.Person>>
+        abstract member PublishPopulation : seq<FsIOCWindow.ModelTypes.Person> -> unit
 
     type PopulationInitialiser () =
-        let initialPopulationSubject = new ReplaySubject<string>()
+        let initialPopulationSubject = new ReplaySubject<seq<FsIOCWindow.ModelTypes.Person>>()
         interface IPopulationInitialiser with
             member this.InitialPopulationStream
                 with get () = initialPopulationSubject.AsObservable()
-            member this.PublishPopulation(population:string) = 
+            member this.PublishPopulation(population:seq<FsIOCWindow.ModelTypes.Person>) = 
                 initialPopulationSubject.OnNext(population)

@@ -6,6 +6,7 @@ open log4net
 open FsIOCWindow.ContainerTypes
 open FsIOCWindow.ServiceTypes
 open FsIOCWindow.Initialisation
+open System.Windows
 
 type App = XAML<"App.xaml">
 
@@ -22,11 +23,12 @@ let main argv =
         printPopulation(population)
         FsIOCWindow.Initialisation.InitialiseIOC()
         IOCManager.Instance.Container.Resolve<IPopulationInitialiser>()
-            .PublishPopulation("YO ITS WOrKING") |> ignore
+            .PublishPopulation(population) |> ignore
         App().Root.Run()
     with
         | Failure(msg) -> 
             log.Error("Error starting up, this could be caused by by AppSettings value for 'InitialPopulationLoadingStrategy'")
-            printUsage() 
+            MessageBox.Show("Error", GetUsageMessage(),MessageBoxButton.OK) |> ignore
+            -1
 
 

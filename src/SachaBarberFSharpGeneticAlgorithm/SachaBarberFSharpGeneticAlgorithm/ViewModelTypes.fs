@@ -5,14 +5,26 @@ open System.Windows
 open FSharp.ViewModule
 open FSharp.ViewModule.Validation
 open FsXaml
-open FsIOCWindow.ContainerTypes
-open FsIOCWindow.ServiceTypes
 open System.Windows.Input
 open System.ComponentModel
 open Microsoft.FSharp.Quotations.Patterns
 open System.ComponentModel
-open log4net
 open System.Reactive.Disposables
+open System.Reactive.Concurrency
+open System.Reactive.Linq
+open System.Collections.Generic
+
+open log4net
+
+open FsIOCWindow.ContainerTypes
+open FsIOCWindow.ServiceTypes
+open FsIOCWindow.ModelTypes
+open BioCSharp.Interfaces
+open BioCSharp.Biomorphs
+
+
+
+
 
 //Simple base class for VMs that provides INPC
 //functionality
@@ -31,7 +43,11 @@ type ObservableObject () =
     member this.NotifyPropertyChanged quotation = 
         quotation |> getPropertyName |> this.NotifyPropertyChanged
 
-//Simple RelayCommand (ALA Josh Smith, to allow ICommands inside VM)
+
+
+//Simple RelayCommand (ALA Josh Smith/Marlon Grech/Me any of the Wpf Disciples actually.
+//This allows ICommands to run with their logic inside VM, by way of 
+//Action<object> for ICommand.Execute / Predicate<object> for ICommand.CanExecute
 //http://sergeytihon.wordpress.com/2013/04/27/wpf-mvvm-with-xaml-type-provider/
 type RelayCommand (canExecute:(obj -> bool), action:(obj -> unit)) =
     let event = new DelegateEvent<EventHandler>()
@@ -43,38 +59,113 @@ type RelayCommand (canExecute:(obj -> bool), action:(obj -> unit)) =
 
 
 
-
 // MainWindowViewModel
-type MainWindowViewModel(_populationInitialiser:IPopulationInitialiser) =
+type MainWindowViewModel(_populationInitialiser:IPopulationInitialiser) as x =
     inherit ObservableObject()
+
     let populationInitialiser = _populationInitialiser
+    let disposables = new CompositeDisposable()
+    let mutable population = new List<EvolvableSkullViewModel>()
+
     static let log = LogManager.GetLogger(Operators.typeof<MainWindowViewModel>)
 
-    let mutable message = ""
-    let disposables = new CompositeDisposable()
     do 
         disposables.Add(populationInitialiser.InitialPopulationStream
-            .Subscribe(fun population -> 
-                log.Info("Setting initial population from populationInitialiser")
-                message <- population
-            ))
-        log.Info("Constructed MainWindowViewModel")
-    
-    member this.Message
-        with get () = message
-        and set value = 
-            if message <> value then
-                message <- value
-                this.NotifyPropertyChanged <@ this.Message @>
+            .Subscribe(fun initialGeneSequencesFromCsv -> 
+                let popCount = initialGeneSequencesFromCsv |> Seq.length
+                log.Info(
+                    String.Format(
+                        "Setting initial Gene Sequences of {0} organisms from populationInitialiser", 
+                        popCount))
 
+                let initialGeneSequences = List.ofSeq(initialGeneSequencesFromCsv)
+
+                let biomorphs = List.ofSeq (seq { for i in 0.. 8 
+                    do yield new EvolvableSkullViewModel(x, Guid.NewGuid()) })
+
+                for i = 0 to 8 do
+                    biomorphs.[i].CreateGenes(initialGeneSequences.[i]);
+                    (biomorphs.[i] :> IEvolvableSkull).ScoreOrganism()
+
+                population <-  new List<EvolvableSkullViewModel>(biomorphs)
+                x.StartSelectionProcessTimer()
+            ))
+
+        log.Info("Constructed MainWindowViewModel")
+
+
+
+    interface IMainWindowViewModel  with
+
+
+        member x.SortPopulationByFitness() = 
+
+            //get the fitest organism, and use that as the dominant one that will
+            //be used to make children from
+            let comparer = new EvolvableSkullComparer();
+
+            //don't disturb current Population, work with a copy of it
+            let copyOfPopulation = new List<EvolvableSkullViewModel>(x.Population)
+            copyOfPopulation.Sort(comparer)
+
+            copyOfPopulation.Reverse()
+            for i = 0 to 8 do
+                if (x.Population.[i] :> IEvolvableSkull).Id = (copyOfPopulation.[0] :> IEvolvableSkull).Id then
+                    x.Population.[i].IsSelected <- true
+                else
+                    x.Population.[i].IsSelected <- false
+            (x :> IMainWindowViewModel).NewPopulationFromDominant(copyOfPopulation.[0])
+            ()
+
+
+        member x.NewPopulationFromDominant(chosenDominantOrganism:IEvolvableSkull) =  
+            let clone =  chosenDominantOrganism.Clone()
+            for i = 0 to 8 do
+                if (i = x.Population.Count-1) then 
+                    x.Population.[i].SetToOther(x.Population.[i - 1].MakeChild(clone))
+                else
+                    x.Population.[i].SetToOther(x.Population.[i + 1].MakeChild(clone))
+            let copyOfPopulation = new List<EvolvableSkullViewModel>(x.Population)
+
+            //assign new Population will force WPF UI to redraw population
+            x.Population <- copyOfPopulation
+            ()
+
+    member this.Population
+        with get () = population
+        and set value = 
+                population <- value
+                this.NotifyPropertyChanged <@ this.Population @>
+    
+    member this.StartSelectionProcessTimer() =
+        disposables.Add(Observable.Interval(TimeSpan.FromSeconds(0.3), Scheduler.TaskPool)
+            .Subscribe(fun timer -> 
+                async { 
+                    try
+                        for i = 0 to 8 do
+                            let organism = x.Population.[i] 
+                            (organism :> IEvolvableSkull).ScoreOrganism()
+                        (x :> IMainWindowViewModel).SortPopulationByFitness()
+                    with
+                        | Failure(msg) -> 
+                            log.Error("Error starting up, this could be caused by by AppSettings value for 'InitialPopulationLoadingStrategy'")
+                } |> Async.RunSynchronously
+
+            ))
+        ()
+    
     member this.OkCommand = 
         new RelayCommand ((fun canExecute -> true), 
-            (fun action -> MessageBox.Show(this.Message) |> ignore))
+            (fun action -> MessageBox.Show("This should show a F# Chart of current population") |> ignore))
 
     member this.WindowClosingCommand = 
         new RelayCommand ((fun canExecute -> true), 
-            (fun action -> MessageBox.Show("Closing") |> ignore))
+            (fun action -> disposables.Dispose()))
     
+
+
+    
+
 
 //Some useful attached DPs    
 [<AbstractClass; Sealed>]
@@ -121,4 +212,6 @@ type AttachedProps private () =
    
    // Get the property
    static member GetViewModelType (element:UIElement) = 
-       element.GetValue AttachedProps.ViewModelTypeProperty       
+       element.GetValue AttachedProps.ViewModelTypeProperty
+       
+              

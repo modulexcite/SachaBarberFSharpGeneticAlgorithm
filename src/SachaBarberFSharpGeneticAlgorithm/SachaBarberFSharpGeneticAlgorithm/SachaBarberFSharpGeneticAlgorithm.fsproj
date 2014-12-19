@@ -9,9 +9,10 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>FsEmptyWindowsApp4</RootNamespace>
     <AssemblyName>SachaBarberFSharpGeneticAlgorithm</AssemblyName>
-    <targetframeworkversion>v4.5</targetframeworkversion>
+    <targetframeworkversion>v4.5.1</targetframeworkversion>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
     <Name>FsEmptyWindowsApp4</Name>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,6 +53,7 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="ContainerTypes.fs" />
+    <Compile Include="ModelTypes.fs" />
     <Compile Include="ServiceTypes.fs" />
     <Compile Include="ViewModelTypes.fs" />
     <Compile Include="Initialisation.fs" />
@@ -64,6 +66,7 @@
     <None Include="InitialPopulation.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
@@ -109,6 +112,18 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Reactive, Version=1.0.10621.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\..\packages\Rx-PlatformServices.2.2.5\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Windows.Interactivity">
       <HintPath>..\..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
@@ -119,5 +134,17 @@
     <Reference Include="UIAutomationProvider" />
     <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BioCSharp.Interfaces\BioCSharp.Interfaces.csproj">
+      <Name>BioCSharp.Interfaces</Name>
+      <Project>{149b4445-c418-4082-ad95-f11fee95580e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\BioCSharp\BioCSharp.csproj">
+      <Name>BioCSharp</Name>
+      <Project>{15d234e1-5424-464a-8357-2986f01b9578}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
 </Project>

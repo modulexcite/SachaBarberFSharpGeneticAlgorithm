@@ -6,44 +6,50 @@ module Initialisation =
     open System.Configuration
     open FSharp.Data
 
-
-    //Person record
-    type Person = 
-        {   Age:int; 
-            Name:string 
-        }
-        override this.ToString() = String.Format("Age : {0}, Name: {1}", this.Age, this.Name)
-
-
     type initialPopulationDataFromCsv = CsvProvider<"InitialPopulation.csv">
-
 
     let createInitialPopulationFromCsvUsingCsvProvider() = 
         let exePath = System.Reflection.Assembly.GetEntryAssembly().Location
         let path = exePath.Substring(0,exePath.LastIndexOf(@"\") + 1) + "InitialPopulation.csv"
         let populationFromCsv = initialPopulationDataFromCsv.Load(path)
-        populationFromCsv.Rows |> Seq.map (fun row -> 
-            { 
-                Age=Convert.ToInt32(row.Age);
-                Name=row.Name
-            })
+        populationFromCsv.Rows 
+            |> Seq.map (fun row -> 
+                { 
+                    FaceGene=Convert.ToDouble(row.FaceGene);
+                    LeftEyeGene=Convert.ToDouble(row.LeftEyeGene);
+                    RightEyeGene=Convert.ToDouble(row.RightEyeGene);
+                    NoseGene=Convert.ToDouble(row.NoseGene);
+                    LeftBoneTopGene=Convert.ToDouble(row.LeftBoneTopGene);
+                    RightBoneTopGene=Convert.ToDouble(row.RightBoneTopGene);
+                    TeethGene=Convert.ToDouble(row.TeethGene);
+                    LeftBoneBottomGene=Convert.ToDouble(row.LeftBoneBottomGene);
+                    RightBoneBottomGene=Convert.ToDouble(row.RightBoneBottomGene);
+                })
 
     let createInitialPopulationFromCsvUsingDeedle() = 
         let exePath = System.Reflection.Assembly.GetEntryAssembly().Location
         let path = exePath.Substring(0,exePath.LastIndexOf(@"\") + 1) + "InitialPopulation.csv"
         let testCsv = Frame.ReadCsv(path)
-        let loadedPopulation  = testCsv |> Frame.mapRowValues (fun row -> 
-            { 
-                Age=Convert.ToInt32(row?Age);
-                Name=row.["Name"].ToString()
-            })
+        let loadedPopulation  = 
+            testCsv 
+            |> Frame.mapRowValues (fun row -> 
+                { 
+                    FaceGene=Convert.ToDouble(row?FaceGene);
+                    LeftEyeGene=Convert.ToDouble(row?LeftEyeGene);
+                    RightEyeGene=Convert.ToDouble(row?RightEyeGene);
+                    NoseGene=Convert.ToDouble(row?NoseGene);
+                    LeftBoneTopGene=Convert.ToDouble(row?LeftBoneTopGene);
+                    RightBoneTopGene=Convert.ToDouble(row?RightBoneTopGene);
+                    TeethGene=Convert.ToDouble(row?TeethGene);
+                    LeftBoneBottomGene=Convert.ToDouble(row?LeftBoneBottomGene);
+                    RightBoneBottomGene=Convert.ToDouble(row?RightBoneBottomGene);
+                })
         loadedPopulation.Values
 
 
-    let printUsage() =
-        printfn "SachaBarberFSharpFinalProject must run with either 'Deedle' 
+    let GetUsageMessage() =
+        "SachaBarberFSharpFinalProject must run with either 'Deedle' 
                     or 'CSVProvider'\r\nfor the InitialPopulationLoadingStrategy App.Config setting"
-        -1 
 
     let DoInitialPopulationLoadingStrategy() =
         let initialPopulationProviderType = 
