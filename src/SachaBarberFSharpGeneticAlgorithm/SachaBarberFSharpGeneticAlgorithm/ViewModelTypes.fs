@@ -4,7 +4,6 @@ open System
 open System.Windows
 open FSharp.ViewModule
 open FSharp.ViewModule.Validation
-open FsXaml
 open System.Windows.Input
 open System.ComponentModel
 open Microsoft.FSharp.Quotations.Patterns
@@ -13,6 +12,10 @@ open System.Reactive.Disposables
 open System.Reactive.Concurrency
 open System.Reactive.Linq
 open System.Collections.Generic
+
+open FsXaml
+open FSharp.Charting
+open FSharp.Charting.ChartTypes
 
 open log4net
 
@@ -23,6 +26,8 @@ open BioCSharp.Interfaces
 open BioCSharp.Biomorphs
 
 
+
+type ChartView = XAML<"ChartWindow.xaml", true>
 
 
 
@@ -48,6 +53,7 @@ type ObservableObject () =
 //Simple RelayCommand (ALA Josh Smith/Marlon Grech/Me any of the Wpf Disciples actually.
 //This allows ICommands to run with their logic inside VM, by way of 
 //Action<object> for ICommand.Execute / Predicate<object> for ICommand.CanExecute
+//This paticular F# version comes from
 //http://sergeytihon.wordpress.com/2013/04/27/wpf-mvvm-with-xaml-type-provider/
 type RelayCommand (canExecute:(obj -> bool), action:(obj -> unit)) =
     let event = new DelegateEvent<EventHandler>()
@@ -154,9 +160,16 @@ type MainWindowViewModel(_populationInitialiser:IPopulationInitialiser) as x =
             ))
         ()
     
-    member this.OkCommand = 
+    member this.ShowChartCommand = 
         new RelayCommand ((fun canExecute -> true), 
-            (fun action -> MessageBox.Show("This should show a F# Chart of current population") |> ignore))
+            (fun action -> 
+
+                let window = ChartView().Root
+                let winFormHost = window.FindName("WinForm") :?>  System.Windows.Forms.Integration.WindowsFormsHost
+                let chartValues = List.ofSeq(population) |> List.map (fun x ->  x.Fitness)
+                let chart  = Chart.Bar(chartValues)
+                winFormHost.Child <- new ChartControl(chart)
+                window.Show() |> ignore))
 
     member this.WindowClosingCommand = 
         new RelayCommand ((fun canExecute -> true), 
@@ -171,7 +184,7 @@ type MainWindowViewModel(_populationInitialiser:IPopulationInitialiser) as x =
 [<AbstractClass; Sealed>]
 type AttachedProps private () =
 
-   static let log = LogManager.GetLogger(Operators.typeof<MainWindowViewModel>)
+   static let log = LogManager.GetLogger(Operators.typeof<AttachedProps>)
 
    // Register the attached property, with some metadata that will allow a callback
    static let metadata = 

@@ -9,6 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioCSharp.Interfaces", "Sac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioCSharp", "SachaBarberFSharpGeneticAlgorithm\BioCSharp\BioCSharp.csproj", "{15D234E1-5424-464A-8357-2986F01B9578}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{3367C9C7-917A-4FB7-8966-075076C9FDFC}"
+	ProjectSection(SolutionItems) = preProject
+		SachaBarberFSharpGeneticAlgorithm\SachaBarberFSharpInFinanceFinalCourseWork.odt = SachaBarberFSharpGeneticAlgorithm\SachaBarberFSharpInFinanceFinalCourseWork.odt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

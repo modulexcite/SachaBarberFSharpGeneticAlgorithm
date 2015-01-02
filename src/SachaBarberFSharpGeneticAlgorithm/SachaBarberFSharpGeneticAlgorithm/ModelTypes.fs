@@ -6,9 +6,11 @@ module ModelTypes =
     open System
     open BioCSharp.Interfaces
 
+
     //Person record
     type Person = 
-        {   FaceGene:double; 
+        {   
+            FaceGene:double; 
             LeftEyeGene:double; 
             RightEyeGene:double; 
             NoseGene:double; 
@@ -50,5 +52,3 @@ module ModelTypes =
                 this.TeethGene, 
                 this.LeftBoneBottomGene, 
                 this.RightBoneBottomGene)
-
-
