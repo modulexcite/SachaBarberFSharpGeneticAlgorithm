@@ -1,22 +1,22 @@
-﻿namespace FsIOCWindow
+﻿namespace SachaBarberFSharpGeneticAlgorithm
 
 open System
 open System.Reactive.Subjects
 open System.Reactive.Linq
-open FsIOCWindow.ModelTypes
+open SachaBarberFSharpGeneticAlgorithm.ModelTypes
 
 
 [<AutoOpen>]
 module ServiceTypes = 
 
     type IPopulationInitialiser =
-        abstract member InitialPopulationStream : IObservable<seq<FsIOCWindow.ModelTypes.Person>>
-        abstract member PublishPopulation : seq<FsIOCWindow.ModelTypes.Person> -> unit
+        abstract member InitialPopulationStream : IObservable<seq<SachaBarberFSharpGeneticAlgorithm.ModelTypes.Person>>
+        abstract member PublishPopulation : seq<SachaBarberFSharpGeneticAlgorithm.ModelTypes.Person> -> unit
 
     type PopulationInitialiser () =
-        let initialPopulationSubject = new ReplaySubject<seq<FsIOCWindow.ModelTypes.Person>>()
+        let initialPopulationSubject = new ReplaySubject<seq<SachaBarberFSharpGeneticAlgorithm.ModelTypes.Person>>()
         interface IPopulationInitialiser with
             member this.InitialPopulationStream
                 with get () = initialPopulationSubject.AsObservable()
-            member this.PublishPopulation(population:seq<FsIOCWindow.ModelTypes.Person>) = 
+            member this.PublishPopulation(population:seq<SachaBarberFSharpGeneticAlgorithm.ModelTypes.Person>) = 
                 initialPopulationSubject.OnNext(population)

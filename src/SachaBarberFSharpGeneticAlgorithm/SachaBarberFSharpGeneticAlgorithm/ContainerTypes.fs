@@ -1,4 +1,4 @@
-﻿namespace FsIOCWindow
+﻿namespace SachaBarberFSharpGeneticAlgorithm
 
 [<AutoOpen>]
 module ContainerTypes = 

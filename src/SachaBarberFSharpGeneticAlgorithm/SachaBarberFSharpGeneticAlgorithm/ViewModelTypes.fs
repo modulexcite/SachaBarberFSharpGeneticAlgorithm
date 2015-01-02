@@ -19,9 +19,9 @@ open FSharp.Charting.ChartTypes
 
 open log4net
 
-open FsIOCWindow.ContainerTypes
-open FsIOCWindow.ServiceTypes
-open FsIOCWindow.ModelTypes
+open SachaBarberFSharpGeneticAlgorithm.ContainerTypes
+open SachaBarberFSharpGeneticAlgorithm.ServiceTypes
+open SachaBarberFSharpGeneticAlgorithm.ModelTypes
 open BioCSharp.Interfaces
 open BioCSharp.Biomorphs
 
@@ -144,7 +144,7 @@ type MainWindowViewModel(_populationInitialiser:IPopulationInitialiser) as x =
                 this.NotifyPropertyChanged <@ this.Population @>
     
     member this.StartSelectionProcessTimer() =
-        disposables.Add(Observable.Interval(TimeSpan.FromSeconds(0.3), Scheduler.TaskPool)
+        disposables.Add(Observable.Interval(TimeSpan.FromSeconds(3.0), Scheduler.TaskPool)
             .Subscribe(fun timer -> 
                 async { 
                     try

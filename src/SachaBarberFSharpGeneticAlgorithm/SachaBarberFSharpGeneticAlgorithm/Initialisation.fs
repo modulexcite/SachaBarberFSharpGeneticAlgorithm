@@ -1,4 +1,4 @@
-﻿namespace FsIOCWindow
+﻿namespace SachaBarberFSharpGeneticAlgorithm
 module Initialisation = 
 
     open Deedle

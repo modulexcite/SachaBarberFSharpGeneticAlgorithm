@@ -3,9 +3,9 @@
 open System
 open FsXaml
 open log4net
-open FsIOCWindow.ContainerTypes
-open FsIOCWindow.ServiceTypes
-open FsIOCWindow.Initialisation
+open SachaBarberFSharpGeneticAlgorithm.ContainerTypes
+open SachaBarberFSharpGeneticAlgorithm.ServiceTypes
+open SachaBarberFSharpGeneticAlgorithm.Initialisation
 open System.Windows
 
 type App = XAML<"App.xaml">
@@ -21,7 +21,7 @@ let main argv =
         let population =  DoInitialPopulationLoadingStrategy()
         log.Info("Sucessfully loaded population from chosen population initialiser")
         printPopulation(population)
-        FsIOCWindow.Initialisation.InitialiseIOC()
+        SachaBarberFSharpGeneticAlgorithm.Initialisation.InitialiseIOC()
         IOCManager.Instance.Container.Resolve<IPopulationInitialiser>()
             .PublishPopulation(population) |> ignore
         App().Root.Run()
