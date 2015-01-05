@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{3367C9C7-917A-4FB7-8966-075076C9FDFC}"
 	ProjectSection(SolutionItems) = preProject
 		SachaBarberFSharpGeneticAlgorithm\SachaBarberFSharpInFinanceFinalCourseWork.odt = SachaBarberFSharpGeneticAlgorithm\SachaBarberFSharpInFinanceFinalCourseWork.odt
+		SachaBarberFSharpGeneticAlgorithm\SachaBarberFSharpInFinanceFinalCourseWork.pdf = SachaBarberFSharpGeneticAlgorithm\SachaBarberFSharpInFinanceFinalCourseWork.pdf
 	EndProjectSection
 EndProject
 Global

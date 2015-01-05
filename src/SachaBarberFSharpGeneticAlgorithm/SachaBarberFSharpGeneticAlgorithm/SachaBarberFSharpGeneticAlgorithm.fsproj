@@ -66,7 +66,6 @@
     <None Include="InitialPopulation.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
